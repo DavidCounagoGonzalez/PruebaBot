@@ -9,7 +9,9 @@ import discord4j.rest.util.Color;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.security.GeneralSecurityException;
 import java.time.Instant;
 
 public class Main {
@@ -38,6 +40,14 @@ public class Main {
                 final MessageChannel channel = message.getChannel().block();
 
                 channel.createMessage("Toma unos melocotones <3").block();
+            }
+
+            try {
+                Drive.main();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (GeneralSecurityException e) {
+                e.printStackTrace();
             }
 
             if("!Help".equals(message.getContent())){
@@ -73,6 +83,23 @@ public class Main {
                 channel.createMessage(MessageCreateSpec.builder()
                         .content(" ")
                         .addFile("kirbyCono.png", fileAsInputStream)
+                        .addEmbed(embed)
+                        .build()).subscribe();
+            }
+
+            if("!Img".equals(message.getContent())){
+                final MessageChannel channel = message.getChannel().block();
+
+                InputStream fileAsInputStream = null;
+                try{
+                    fileAsInputStream = new FileInputStream("D:\\david\\Documents\\imagenesB\\your_aux.jpeg");
+                } catch (FileNotFoundException e) {
+                    System.out.println("Error de lectura "+e.getMessage());;
+                }
+
+                channel.createMessage(MessageCreateSpec.builder()
+                        .content("  ")
+                        .addFile("your_aux.jpeg",fileAsInputStream)
                         .addEmbed(embed)
                         .build()).subscribe();
             }
