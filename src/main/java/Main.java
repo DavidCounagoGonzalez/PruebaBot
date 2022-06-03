@@ -103,7 +103,21 @@ public class Main {
                         .addEmbed(embed)
                         .build()).subscribe();
             }
+            if("!pdf".equals(message.getContent())){
+                final MessageChannel channel = message.getChannel().block();
 
+                InputStream fileAsInputStream = null;
+                try{
+                    fileAsInputStream = new FileInputStream("D:\\david\\Documents\\imagenesB\\examen.pdf");
+                } catch (FileNotFoundException e) {
+                    System.out.println("Error de lectura "+e.getMessage());;
+                }
+
+                channel.createMessage(MessageCreateSpec.builder()
+                        .content("  ")
+                        .addFile("examenPDF.pdf",fileAsInputStream)
+                        .build()).subscribe();
+            }
 
         });
 
