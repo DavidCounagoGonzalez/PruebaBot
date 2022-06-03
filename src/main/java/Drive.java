@@ -87,29 +87,63 @@ public class Drive {
                 .setSpaces("drive")
                 .setFields("nextPageToken, files(id, name)")
                 .execute();
-        List<File> files = result.getFiles();
+        List<File> ficheros = result.getFiles();
 
-        if (files == null || files.isEmpty()) {
+        if (ficheros == null || ficheros.isEmpty()) {
             System.out.println("No files found.");
         } else {
             String dirImagenes = null;
             System.out.println("Files:");
-            for (File file : files) {
+            for (File file : ficheros) {
                 System.out.printf("%s (%s)\n", file.getName(), file.getId());
                 dirImagenes = file.getId();
             }
             // busco la imagen en el directorio
             FileList resultImagenes = service.files().list()
-                    .setQ("name contains 'kirbyCono' and parents in '"+dirImagenes+"'")
+                    .setQ("name contains 'kirbyCono' and parents in '" + dirImagenes + "'")
                     .setSpaces("drive")
                     .setFields("nextPageToken, files(id, name)")
                     .execute();
             List<File> filesImagenes = resultImagenes.getFiles();
-            for (File file : filesImagenes) {
-                System.out.printf("Imagen: %s\n", file.getName());
+            for (File fichero : filesImagenes) {
+                System.out.printf("Imagen: %s\n", fichero.getName());
                 // guardamos el 'stream' en el fichero aux.jpeg tiene que existir
                 OutputStream outputStream = new FileOutputStream("D:/david/Documents/imagenesB/your_aux.jpeg");
-                service.files().get(file.getId())
+                service.files().get(fichero.getId())
+                        .executeMediaAndDownloadTo(outputStream);
+                outputStream.flush();
+                outputStream.close();
+            }
+        }
+
+        FileList resultado = service.files().list()
+                .setQ("name contains 'imagenesBot' and mimeType = 'application/vnd.google-apps.folder'")
+                .setPageSize(100)
+                .setSpaces("drive")
+                .setFields("nextPageToken, files(id, name)")
+                .execute();
+        List<File> files = result.getFiles();
+        if (files == null || files.size() == 0) {
+            System.out.println("No files found.");
+        } else {
+            String dirPDF = null;
+            System.out.println("ficheros:");
+            for (File file : files) {
+                System.out.printf("%s (%s)\n", file.getName(), file.getId());
+                dirPDF = file.getId();
+            }
+            FileList resultadoFichero = service.files().list()
+                    .setQ("name contains 'ExamenCOD' and parents in '" + dirPDF + "'")
+                    .setSpaces("drive")
+                    .setFields("nextPageToken, files(id, name)")
+                    .execute();
+            List<File> ficheroDoc = resultadoFichero.getFiles();
+            for (File file : ficheroDoc) {
+                System.out.printf("Documento: %s\n", file.getName());
+                // guardamos el 'stream' en el fichero aux.jpeg tiene que existir
+                String fileID = file.getId();
+                OutputStream outputStream = new FileOutputStream("D:/david/Documents/imagenesB/examenPDF.pdf");
+                service.files().export(fileID,"application/pdf")
                         .executeMediaAndDownloadTo(outputStream);
                 outputStream.flush();
                 outputStream.close();
